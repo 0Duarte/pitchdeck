@@ -73,7 +73,7 @@ export default function DemoPage() {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const [capturing, setCapturing] = useState(false);
   const [recordedChunks, setRecordedChunks] = useState<Blob[]>([]);
-  const [seconds, setSeconds] = useState(150);
+  const [seconds, setSeconds] = useState(60);
   const [videoEnded, setVideoEnded] = useState(false);
   const [recordingPermission, setRecordingPermission] = useState(true);
   const [cameraLoaded, setCameraLoaded] = useState(false);
@@ -158,7 +158,7 @@ export default function DemoPage() {
   const handleDownload = async () => {
     if (recordedChunks.length) {
       setSubmitting(true);
-      setStatus("Processing");
+      setStatus("Processando...");
 
       const file = new Blob(recordedChunks, {
         type: `video/webm`,
@@ -201,10 +201,10 @@ export default function DemoPage() {
 
       const question =
         selected.name === "Elevator"
-          ? `Avalie um pitch elevador de 0 a 10 e seja extremamente criterioso, se não atender o critério de a nota 0, depois de algumas sugestões de melhoria?`
+          ? `Avalie um pitch elevador e seja extremamente criterioso, se não atender o critério de pitch elevador ou não houver transcrição de a nota 0, depois, em forma de lista, de algumas sugestões de melhoria`
           : "You have a 3-gallon jug and 5-gallon jug, how do you measure out exactly 4 gallons?";
 
-      setStatus("Transcribing");
+      setStatus("Processando");
 
       const upload = await fetch(
         `/api/transcribe?question=${encodeURIComponent(question)}`,
@@ -290,7 +290,7 @@ export default function DemoPage() {
     setVideoEnded(false);
     setCapturing(false);
     setIsVisible(true);
-    setSeconds(150);
+    setSeconds(60);
   }
 
   const videoConstraints = isDesktop
@@ -391,7 +391,7 @@ export default function DemoPage() {
                     O video não é armazenado em nosso banco de dados. 
                   </p>
                 </div>
-                <Link
+                {/* <Link
                   href="https://github.com/Tameyer41/liftoff"
                   target="_blank"
                   className="group rounded-full pl-[8px] min-w-[180px] pr-4 py-2 text-[13px] font-semibold transition-all flex items-center justify-center bg-[#1E2B3A] text-white hover:[linear-gradient(0deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.1)), #0D2247] no-underline flex gap-x-2  active:scale-95 scale-100 duration-75"
@@ -423,7 +423,7 @@ export default function DemoPage() {
                     </svg>
                   </span>
                   Star on Github
-                </Link>
+                </Link> */}
               </motion.div>
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
@@ -569,7 +569,7 @@ export default function DemoPage() {
                                     onClick={() => restartVideo()}
                                     className="group rounded-full px-4 py-2 text-[13px] font-semibold transition-all flex items-center justify-center bg-white text-[#1E2B3A] hover:[linear-gradient(0deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.1)), #0D2247] no-underline flex gap-x-2  active:scale-95 scale-100 duration-75"
                                   >
-                                    Restart
+                                    Reiniciar
                                   </button>
                                 )}
                                 <button
@@ -608,7 +608,7 @@ export default function DemoPage() {
                                       </div>
                                     ) : (
                                       <div className="flex items-center justify-center gap-x-2">
-                                        <span>Process transcript</span>
+                                        <span>Gerar feedback</span>
                                         <svg
                                           className="w-5 h-5"
                                           viewBox="0 0 24 24"
