@@ -11,7 +11,12 @@
   "dependencies": {
     "@ffmpeg/core": "^0.11.0",
     "@ffmpeg/ffmpeg": "^0.11.6",
-    "@headlessui/react": "^1.7.14",
+    "@headlessui/react": "^2.1.8",
+    "@nextui-org/react": "^2.4.8",
+    "@shadcn/ui": "^0.0.4",
+    "@supabase/auth-helpers-nextjs": "^0.10.0",
+    "@supabase/auth-helpers-react": "^0.5.0",
+    "@supabase/supabase-js": "^2.45.4",
     "@types/node": "20.2.5",
     "@types/react": "18.2.7",
     "@types/react-dom": "18.2.4",
@@ -29,6 +34,7 @@
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-webcam": "^7.0.1",
+    "shadcn": "^2.1.0",
     "typescript": "5.0.4",
     "uuidv4": "^6.2.13"
   },

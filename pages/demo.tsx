@@ -9,15 +9,24 @@ import { createFFmpeg, fetchFile } from "@ffmpeg/ffmpeg";
 const questions = [
   {
     id: 1,
-    name: "Behavioral",
-    description: "From LinkedIn, Amazon, Adobe",
+    name: "Elevator",
+    description: "Fornecer uma visão rápida e atraente de uma ideia, produto ou serviço",
     difficulty: "Easy",
+    disabled: false,
   },
   {
     id: 2,
-    name: "Technical",
-    description: "From Google, Meta, and Apple",
+    name: "Investor",
+    description: "Apresentar seu negócio ou projeto para investidores em potencial",
     difficulty: "Medium",
+    disabled: true,
+  },
+  {
+    id: 3,
+    name: "Sales",
+    description: "Convencer um cliente em potencial a comprar seu produto ou serviço",
+    difficulty: "Hard",
+    disabled: true,
   },
 ];
 
@@ -82,10 +91,9 @@ export default function DemoPage() {
     setIsDesktop(window.innerWidth >= 768);
   }, []);
 
-  useEffect(() => {
-    if (videoEnded) {
+  const handleStartCaptureClick = useCallback(() => {
+    
       const element = document.getElementById("startTimer");
-
       if (element) {
         element.style.display = "flex";
       }
@@ -101,19 +109,18 @@ export default function DemoPage() {
         handleDataAvailable
       );
       mediaRecorderRef.current.start();
-    }
   }, [videoEnded, webcamRef, setCapturing, mediaRecorderRef]);
 
-  const handleStartCaptureClick = useCallback(() => {
-    const startTimer = document.getElementById("startTimer");
-    if (startTimer) {
-      startTimer.style.display = "none";
-    }
+  // const handleStartCaptureClick = useCallback(() => {
+  //   const startTimer = document.getElementById("startTimer");
+  //   if (startTimer) {
+  //     startTimer.style.display = "none";
+  //   }
 
-    if (vidRef.current) {
-      vidRef.current.play();
-    }
-  }, [webcamRef, setCapturing, mediaRecorderRef]);
+  //   if (vidRef.current) {
+  //     vidRef.current.play();
+  //   }
+  // }, [webcamRef, setCapturing, mediaRecorderRef]);
 
   const handleDataAvailable = useCallback(
     ({ data }: BlobEvent) => {
@@ -193,12 +200,8 @@ export default function DemoPage() {
       formData.append("model", "whisper-1");
 
       const question =
-        selected.name === "Behavioral"
-          ? `Tell me about yourself. Why don${`’`}t you walk me through your resume?`
-          : selectedInterviewer.name === "John"
-          ? "What is a Hash Table, and what is the average case and worst case time for each of its operations?"
-          : selectedInterviewer.name === "Richard"
-          ? "Uber is looking to expand its product line. Talk me through how you would approach this problem."
+        selected.name === "Elevator"
+          ? `Avalie um pitch elevador de 0 a 10 e seja extremamente criterioso, se não atender o critério de a nota 0, depois de algumas sugestões de melhoria?`
           : "You have a 3-gallon jug and 5-gallon jug, how do you measure out exactly 4 gallons?";
 
       setStatus("Transcribing");
@@ -236,7 +239,7 @@ export default function DemoPage() {
             results.transcript
           }. ${
             selected.name === "Behavioral"
-              ? "Please also give feedback on the candidate's communication skills. Make sure their response is structured (perhaps using the STAR or PAR frameworks)."
+              ? "Please also give feedbak on the candidate's communication skills. Make sure their response is structured (perhaps using the STAR or PAR frameworks)."
               : "Please also give feedback on the candidate's communication skills. Make sure they accurately explain their thoughts in a coherent way. Make sure they stay on topic and relevant to the question."
           } \n\n\ Feedback on the candidate's response:`;
 
@@ -305,7 +308,7 @@ export default function DemoPage() {
     <AnimatePresence>
       {step === 3 ? (
         <div className="w-full min-h-screen flex flex-col px-4 pt-2 pb-8 md:px-8 md:py-2 bg-[#FCFCFC] relative overflow-x-hidden">
-          <p className="absolute w-full top-0 h-[60px] flex flex-row justify-between -ml-4 md:-ml-8">
+          {/* <p className="absolute w-full top-0 h-[60px] flex flex-row justify-between -ml-4 md:-ml-8">
             <span className="text-sm text-[#1a2b3b] font-medium">
               demo interview
             </span>
@@ -336,7 +339,7 @@ export default function DemoPage() {
             <span className="text-sm text-[#1a2b3b] font-medium opacity-20 hidden xl:block">
               demo interview
             </span>
-          </p>
+          </p> */}
           {completed ? (
             <div className="w-full flex flex-col max-w-[1080px] mx-auto mt-[10vh] overflow-y-auto pb-8 md:pb-12">
               <motion.div
@@ -385,8 +388,7 @@ export default function DemoPage() {
                     />
                   </svg>
                   <p className="text-[14px] font-normal leading-[20px] text-[#1a2b3b]">
-                    Video is not stored on our servers, and will go away as soon
-                    as you leave the page.
+                    O video não é armazenado em nosso banco de dados. 
                   </p>
                 </div>
                 <Link
@@ -433,7 +435,7 @@ export default function DemoPage() {
                 }}
                 className="mt-8 flex flex-col"
               >
-                <div>
+                {/* <div>
                   <h2 className="text-xl font-semibold text-left text-[#1D2B3A] mb-2">
                     Transcript
                   </h2>
@@ -442,7 +444,7 @@ export default function DemoPage() {
                       ? transcript
                       : "Don't think you said anything. Want to try again?"}
                   </p>
-                </div>
+                </div> */}
                 <div className="mt-8">
                   <h2 className="text-xl font-semibold text-left text-[#1D2B3A] mb-2">
                     Feedback
@@ -460,17 +462,13 @@ export default function DemoPage() {
               {recordingPermission ? (
                 <div className="w-full flex flex-col max-w-[1080px] mx-auto justify-center">
                   <h2 className="text-2xl font-semibold text-left text-[#1D2B3A] mb-2">
-                    {selected.name === "Behavioral"
-                      ? `Tell me about yourself. Why don${`’`}t you walk me through your resume?`
-                      : selectedInterviewer.name === "John"
-                      ? "What is a Hash Table, and what is the average case and worst case time for each of its operations?"
-                      : selectedInterviewer.name === "Richard"
-                      ? "Uber is looking to expand its product line. Talk me through how you would approach this problem."
+                    {selected.name === "Elevator"
+                      ? `Pitch elevator`
                       : "You have a 3-gallon jug and 5-gallon jug, how do you measure out exactly 4 gallons?"}
                   </h2>
-                  <span className="text-[14px] leading-[20px] text-[#1a2b3b] font-normal mb-4">
+                  {/* <span className="text-[14px] leading-[20px] text-[#1a2b3b] font-normal mb-4">
                     Asked by top companies like Google, Facebook and more
-                  </span>
+                  </span> */}
                   <motion.div
                     initial={{ y: -20 }}
                     animate={{ y: 0 }}
@@ -510,42 +508,7 @@ export default function DemoPage() {
                           {new Date(seconds * 1000).toISOString().slice(14, 19)}
                         </span>
                       </div>
-                      {isVisible && ( // If the video is visible (on screen) we show it
-                        <div className="block absolute top-[10px] sm:top-[20px] lg:top-[40px] left-auto right-[10px] sm:right-[20px] md:right-10 h-[80px] sm:h-[140px] md:h-[180px] aspect-video rounded z-20">
-                          <div className="h-full w-full aspect-video rounded md:rounded-lg lg:rounded-xl">
-                            <video
-                              id="question-video"
-                              onEnded={() => setVideoEnded(true)}
-                              controls={false}
-                              ref={vidRef}
-                              playsInline
-                              className="h-full object-cover w-full rounded-md md:rounded-[12px] aspect-video"
-                              crossOrigin="anonymous"
-                            >
-                              <source
-                                src={
-                                  selectedInterviewer.name === "John"
-                                    ? selected.name === "Behavioral"
-                                      ? "https://liftoff-public.s3.amazonaws.com/DemoInterviewMale.mp4"
-                                      : "https://liftoff-public.s3.amazonaws.com/JohnTechnical.mp4"
-                                    : selectedInterviewer.name === "Richard"
-                                    ? selected.name === "Behavioral"
-                                      ? "https://liftoff-public.s3.amazonaws.com/RichardBehavioral.mp4"
-                                      : "https://liftoff-public.s3.amazonaws.com/RichardTechnical.mp4"
-                                    : selectedInterviewer.name === "Sarah"
-                                    ? selected.name === "Behavioral"
-                                      ? "https://liftoff-public.s3.amazonaws.com/BehavioralSarah.mp4"
-                                      : "https://liftoff-public.s3.amazonaws.com/SarahTechnical.mp4"
-                                    : selected.name === "Behavioral"
-                                    ? "https://liftoff-public.s3.amazonaws.com/DemoInterviewMale.mp4"
-                                    : "https://liftoff-public.s3.amazonaws.com/JohnTechnical.mp4"
-                                }
-                                type="video/mp4"
-                              />
-                            </video>
-                          </div>
-                        </div>
-                      )}
+                      
                       <Webcam
                         mirrored
                         audio
@@ -713,7 +676,7 @@ export default function DemoPage() {
                     }}
                     className="flex flex-row space-x-1 mt-4 items-center"
                   >
-                    <svg
+                    {/* <svg
                       xmlns="http://www.w3.org/2000/svg"
                       fill="none"
                       viewBox="0 0 24 24"
@@ -726,11 +689,11 @@ export default function DemoPage() {
                         strokeLinejoin="round"
                         d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"
                       />
-                    </svg>
-                    <p className="text-[14px] font-normal leading-[20px] text-[#1a2b3b]">
+                    </svg> */}
+                    {/* <p className="text-[14px] font-normal leading-[20px] text-[#1a2b3b]">
                       Video is not stored on our servers, it is solely used for
                       transcription.
-                    </p>
+                    </p> */}
                   </motion.div>
                 </div>
               ) : (
@@ -809,24 +772,6 @@ export default function DemoPage() {
             transition={{ duration: 1.25, ease: [0.23, 1, 0.32, 1] }}
             className="absolute w-full md:w-1/2 top-0 h-[60px] flex flex-row justify-between"
           >
-            <span className="text-sm text-[#1a2b3b] font-medium">
-              demo interview
-            </span>
-            <span className="text-sm text-[#1a2b3b] font-medium opacity-20">
-              demo interview
-            </span>
-            <span className="text-sm text-[#1a2b3b] font-medium">
-              demo interview
-            </span>
-            <span className="text-sm text-[#1a2b3b] font-medium opacity-20 hidden sm:block">
-              demo interview
-            </span>
-            <span className="text-sm text-[#1a2b3b] font-medium hidden sm:block">
-              demo interview
-            </span>
-            <span className="text-sm text-[#1a2b3b] font-medium opacity-20 hidden xl:block">
-              demo interview
-            </span>
           </motion.p>
           <div className="w-full min-h-[60vh] md:w-1/2 md:h-screen flex flex-col px-4 pt-2 pb-8 md:px-0 md:py-2 bg-[#FCFCFC] justify-center">
             <div className="h-full w-full items-center justify-center flex flex-col">
@@ -843,11 +788,10 @@ export default function DemoPage() {
                   className="max-w-lg mx-auto px-4 lg:px-0"
                 >
                   <h2 className="text-4xl font-bold text-[#1E2B3A]">
-                    Select a question type
+                    Selecione um tipo de pitch
                   </h2>
                   <p className="text-[14px] leading-[20px] text-[#1a2b3b] font-normal my-4">
-                    We have hundreds of questions from top tech companies.
-                    Choose a type to get started.
+                    O tipo selecionado irá definir critérios de julgamento e tempo máximo de resposta.
                   </p>
                   <div>
                     <RadioGroup value={selected} onChange={setSelected}>
@@ -857,11 +801,15 @@ export default function DemoPage() {
                       <div className="space-y-4">
                         {questions.map((question) => (
                           <RadioGroup.Option
+                            disabled={question.disabled}
                             key={question.name}
                             value={question}
                             className={({ checked, active }) =>
                               classNames(
-                                checked
+                                question.disabled
+                                  ? "opacity-50 cursor-not-allowed"
+                                  : "",
+                                checked 
                                   ? "border-transparent"
                                   : "border-gray-300",
                                 active
@@ -895,74 +843,6 @@ export default function DemoPage() {
                                   as="span"
                                   className="flex text-sm ml-4 mt-0 flex-col text-right items-center justify-center"
                                 >
-                                  <span className=" text-gray-500">
-                                    {question.difficulty === "Easy" ? (
-                                      <svg
-                                        className="h-full w-[16px]"
-                                        viewBox="0 0 22 25"
-                                        fill="none"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                      >
-                                        <rect
-                                          y="13.1309"
-                                          width="6"
-                                          height="11"
-                                          rx="1"
-                                          fill="#4E7BBA"
-                                        />
-                                        <rect
-                                          x="8"
-                                          y="8.13086"
-                                          width="6"
-                                          height="16"
-                                          rx="1"
-                                          fill="#E1E1E1"
-                                        />
-                                        <rect
-                                          x="16"
-                                          y="0.130859"
-                                          width="6"
-                                          height="24"
-                                          rx="1"
-                                          fill="#E1E1E1"
-                                        />
-                                      </svg>
-                                    ) : (
-                                      <svg
-                                        className="h-full w-[16px]"
-                                        viewBox="0 0 22 25"
-                                        fill="none"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                      >
-                                        <rect
-                                          y="13.1309"
-                                          width="6"
-                                          height="11"
-                                          rx="1"
-                                          fill="#4E7BBA"
-                                        />
-                                        <rect
-                                          x="8"
-                                          y="8.13086"
-                                          width="6"
-                                          height="16"
-                                          rx="1"
-                                          fill="#4E7BBA"
-                                        />
-                                        <rect
-                                          x="16"
-                                          y="0.130859"
-                                          width="6"
-                                          height="24"
-                                          rx="1"
-                                          fill="#E1E1E1"
-                                        />
-                                      </svg>
-                                    )}
-                                  </span>
-                                  <span className="font-medium text-gray-900">
-                                    {question.difficulty}
-                                  </span>
                                 </RadioGroup.Description>
                                 <span
                                   className={classNames(
@@ -990,320 +870,8 @@ export default function DemoPage() {
                           boxShadow: "0 1px 1px #0c192714, 0 1px 3px #0c192724",
                         }}
                       >
-                        Back to home
+                        Voltar
                       </Link>
-                    </div>
-                    <div>
-                      <button
-                        onClick={() => {
-                          setStep(2);
-                        }}
-                        className="group rounded-full px-4 py-2 text-[13px] font-semibold transition-all flex items-center justify-center bg-[#1E2B3A] text-white hover:[linear-gradient(0deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.1)), #0D2247] no-underline flex gap-x-2  active:scale-95 scale-100 duration-75"
-                        style={{
-                          boxShadow:
-                            "0px 1px 4px rgba(13, 34, 71, 0.17), inset 0px 0px 0px 1px #061530, inset 0px 0px 0px 2px rgba(255, 255, 255, 0.1)",
-                        }}
-                      >
-                        <span> Continue </span>
-                        <svg
-                          className="w-5 h-5"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M13.75 6.75L19.25 12L13.75 17.25"
-                            stroke="#FFF"
-                            strokeWidth="1.5"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                          <path
-                            d="M19 12H4.75"
-                            stroke="#FFF"
-                            strokeWidth="1.5"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
-                      </button>
-                    </div>
-                  </div>
-                </motion.div>
-              ) : step === 2 ? (
-                <motion.div
-                  initial={{ opacity: 0, y: 40 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -40 }}
-                  key="step-2"
-                  transition={{
-                    duration: 0.95,
-                    ease: [0.165, 0.84, 0.44, 1],
-                  }}
-                  className="max-w-lg mx-auto px-4 lg:px-0"
-                >
-                  <h2 className="text-4xl font-bold text-[#1E2B3A]">
-                    And an interviewer
-                  </h2>
-                  <p className="text-[14px] leading-[20px] text-[#1a2b3b] font-normal my-4">
-                    Choose whoever makes you feel comfortable. You can always
-                    try again with another one.
-                  </p>
-                  <div>
-                    <RadioGroup
-                      value={selectedInterviewer}
-                      onChange={setSelectedInterviewer}
-                    >
-                      <RadioGroup.Label className="sr-only">
-                        Server size
-                      </RadioGroup.Label>
-                      <div className="space-y-4">
-                        {interviewers.map((interviewer) => (
-                          <RadioGroup.Option
-                            key={interviewer.name}
-                            value={interviewer}
-                            className={({ checked, active }) =>
-                              classNames(
-                                checked
-                                  ? "border-transparent"
-                                  : "border-gray-300",
-                                active
-                                  ? "border-blue-500 ring-2 ring-blue-200"
-                                  : "",
-                                "relative cursor-pointer rounded-lg border bg-white px-6 py-4 shadow-sm focus:outline-none flex justify-between"
-                              )
-                            }
-                          >
-                            {({ active, checked }) => (
-                              <>
-                                <span className="flex items-center">
-                                  <span className="flex flex-col text-sm">
-                                    <RadioGroup.Label
-                                      as="span"
-                                      className="font-medium text-gray-900"
-                                    >
-                                      {interviewer.name}
-                                    </RadioGroup.Label>
-                                    <RadioGroup.Description
-                                      as="span"
-                                      className="text-gray-500"
-                                    >
-                                      <span className="block">
-                                        {interviewer.description}
-                                      </span>
-                                    </RadioGroup.Description>
-                                  </span>
-                                </span>
-                                <RadioGroup.Description
-                                  as="span"
-                                  className="flex text-sm ml-4 mt-0 flex-col text-right items-center justify-center"
-                                >
-                                  <span className=" text-gray-500">
-                                    <svg
-                                      className="w-[28px] h-full"
-                                      viewBox="0 0 38 30"
-                                      fill="none"
-                                      xmlns="http://www.w3.org/2000/svg"
-                                    >
-                                      <g filter="url(#filter0_d_34_25)">
-                                        <g clipPath="url(#clip0_34_25)">
-                                          <mask
-                                            id="mask0_34_25"
-                                            style={{ maskType: "luminance" }}
-                                            maskUnits="userSpaceOnUse"
-                                            x="3"
-                                            y="1"
-                                            width="32"
-                                            height="24"
-                                          >
-                                            <rect
-                                              x="3"
-                                              y="1"
-                                              width="32"
-                                              height="24"
-                                              fill="white"
-                                            />
-                                          </mask>
-                                          <g mask="url(#mask0_34_25)">
-                                            <path
-                                              fillRule="evenodd"
-                                              clipRule="evenodd"
-                                              d="M3 1H35V25H3V1Z"
-                                              fill="#F7FCFF"
-                                            />
-                                            <path
-                                              fillRule="evenodd"
-                                              clipRule="evenodd"
-                                              d="M3 15.6666V17.6666H35V15.6666H3Z"
-                                              fill="#E31D1C"
-                                            />
-                                            <path
-                                              fillRule="evenodd"
-                                              clipRule="evenodd"
-                                              d="M3 19.3334V21.3334H35V19.3334H3Z"
-                                              fill="#E31D1C"
-                                            />
-                                            <path
-                                              fillRule="evenodd"
-                                              clipRule="evenodd"
-                                              d="M3 8.33337V10.3334H35V8.33337H3Z"
-                                              fill="#E31D1C"
-                                            />
-                                            <path
-                                              fillRule="evenodd"
-                                              clipRule="evenodd"
-                                              d="M3 23V25H35V23H3Z"
-                                              fill="#E31D1C"
-                                            />
-                                            <path
-                                              fillRule="evenodd"
-                                              clipRule="evenodd"
-                                              d="M3 12V14H35V12H3Z"
-                                              fill="#E31D1C"
-                                            />
-                                            <path
-                                              fillRule="evenodd"
-                                              clipRule="evenodd"
-                                              d="M3 1V3H35V1H3Z"
-                                              fill="#E31D1C"
-                                            />
-                                            <path
-                                              fillRule="evenodd"
-                                              clipRule="evenodd"
-                                              d="M3 4.66663V6.66663H35V4.66663H3Z"
-                                              fill="#E31D1C"
-                                            />
-                                            <rect
-                                              x="3"
-                                              y="1"
-                                              width="20"
-                                              height="13"
-                                              fill="#2E42A5"
-                                            />
-                                            <path
-                                              fillRule="evenodd"
-                                              clipRule="evenodd"
-                                              d="M4.72221 3.93871L3.99633 4.44759L4.2414 3.54198L3.59668 2.96807H4.43877L4.7212 2.229L5.05237 2.96807H5.77022L5.20619 3.54198L5.42455 4.44759L4.72221 3.93871ZM8.72221 3.93871L7.99633 4.44759L8.2414 3.54198L7.59668 2.96807H8.43877L8.7212 2.229L9.05237 2.96807H9.77022L9.20619 3.54198L9.42455 4.44759L8.72221 3.93871ZM11.9963 4.44759L12.7222 3.93871L13.4245 4.44759L13.2062 3.54198L13.7702 2.96807H13.0524L12.7212 2.229L12.4388 2.96807H11.5967L12.2414 3.54198L11.9963 4.44759ZM16.7222 3.93871L15.9963 4.44759L16.2414 3.54198L15.5967 2.96807H16.4388L16.7212 2.229L17.0524 2.96807H17.7702L17.2062 3.54198L17.4245 4.44759L16.7222 3.93871ZM3.99633 8.44759L4.72221 7.93871L5.42455 8.44759L5.20619 7.54198L5.77022 6.96807H5.05237L4.7212 6.229L4.43877 6.96807H3.59668L4.2414 7.54198L3.99633 8.44759ZM8.72221 7.93871L7.99633 8.44759L8.2414 7.54198L7.59668 6.96807H8.43877L8.7212 6.229L9.05237 6.96807H9.77022L9.20619 7.54198L9.42455 8.44759L8.72221 7.93871ZM11.9963 8.44759L12.7222 7.93871L13.4245 8.44759L13.2062 7.54198L13.7702 6.96807H13.0524L12.7212 6.229L12.4388 6.96807H11.5967L12.2414 7.54198L11.9963 8.44759ZM16.7222 7.93871L15.9963 8.44759L16.2414 7.54198L15.5967 6.96807H16.4388L16.7212 6.229L17.0524 6.96807H17.7702L17.2062 7.54198L17.4245 8.44759L16.7222 7.93871ZM3.99633 12.4476L4.72221 11.9387L5.42455 12.4476L5.20619 11.542L5.77022 10.9681H5.05237L4.7212 10.229L4.43877 10.9681H3.59668L4.2414 11.542L3.99633 12.4476ZM8.72221 11.9387L7.99633 12.4476L8.2414 11.542L7.59668 10.9681H8.43877L8.7212 10.229L9.05237 10.9681H9.77022L9.20619 11.542L9.42455 12.4476L8.72221 11.9387ZM11.9963 12.4476L12.7222 11.9387L13.4245 12.4476L13.2062 11.542L13.7702 10.9681H13.0524L12.7212 10.229L12.4388 10.9681H11.5967L12.2414 11.542L11.9963 12.4476ZM16.7222 11.9387L15.9963 12.4476L16.2414 11.542L15.5967 10.9681H16.4388L16.7212 10.229L17.0524 10.9681H17.7702L17.2062 11.542L17.4245 12.4476L16.7222 11.9387ZM19.9963 4.44759L20.7222 3.93871L21.4245 4.44759L21.2062 3.54198L21.7702 2.96807H21.0524L20.7212 2.229L20.4388 2.96807H19.5967L20.2414 3.54198L19.9963 4.44759ZM20.7222 7.93871L19.9963 8.44759L20.2414 7.54198L19.5967 6.96807H20.4388L20.7212 6.229L21.0524 6.96807H21.7702L21.2062 7.54198L21.4245 8.44759L20.7222 7.93871ZM19.9963 12.4476L20.7222 11.9387L21.4245 12.4476L21.2062 11.542L21.7702 10.9681H21.0524L20.7212 10.229L20.4388 10.9681H19.5967L20.2414 11.542L19.9963 12.4476ZM6.72221 5.93871L5.99633 6.44759L6.2414 5.54198L5.59668 4.96807H6.43877L6.7212 4.229L7.05237 4.96807H7.77022L7.20619 5.54198L7.42455 6.44759L6.72221 5.93871ZM9.99633 6.44759L10.7222 5.93871L11.4245 6.44759L11.2062 5.54198L11.7702 4.96807H11.0524L10.7212 4.229L10.4388 4.96807H9.59668L10.2414 5.54198L9.99633 6.44759ZM14.7222 5.93871L13.9963 6.44759L14.2414 5.54198L13.5967 4.96807H14.4388L14.7212 4.229L15.0524 4.96807H15.7702L15.2062 5.54198L15.4245 6.44759L14.7222 5.93871ZM5.99633 10.4476L6.72221 9.93871L7.42455 10.4476L7.20619 9.54198L7.77022 8.96807H7.05237L6.7212 8.229L6.43877 8.96807H5.59668L6.2414 9.54198L5.99633 10.4476ZM10.7222 9.93871L9.99633 10.4476L10.2414 9.54198L9.59668 8.96807H10.4388L10.7212 8.229L11.0524 8.96807H11.7702L11.2062 9.54198L11.4245 10.4476L10.7222 9.93871ZM13.9963 10.4476L14.7222 9.93871L15.4245 10.4476L15.2062 9.54198L15.7702 8.96807H15.0524L14.7212 8.229L14.4388 8.96807H13.5967L14.2414 9.54198L13.9963 10.4476ZM18.7222 5.93871L17.9963 6.44759L18.2414 5.54198L17.5967 4.96807H18.4388L18.7212 4.229L19.0524 4.96807H19.7702L19.2062 5.54198L19.4245 6.44759L18.7222 5.93871ZM17.9963 10.4476L18.7222 9.93871L19.4245 10.4476L19.2062 9.54198L19.7702 8.96807H19.0524L18.7212 8.229L18.4388 8.96807H17.5967L18.2414 9.54198L17.9963 10.4476Z"
-                                              fill="#F7FCFF"
-                                            />
-                                          </g>
-                                          <rect
-                                            x="3"
-                                            y="1"
-                                            width="32"
-                                            height="24"
-                                            fill="url(#paint0_linear_34_25)"
-                                            style={{ mixBlendMode: "overlay" }}
-                                          />
-                                        </g>
-                                        <rect
-                                          x="3.5"
-                                          y="1.5"
-                                          width="31"
-                                          height="23"
-                                          rx="1.5"
-                                          stroke="black"
-                                          strokeOpacity="0.1"
-                                          style={{ mixBlendMode: "multiply" }}
-                                        />
-                                      </g>
-                                      <defs>
-                                        <filter
-                                          id="filter0_d_34_25"
-                                          x="0"
-                                          y="0"
-                                          width="38"
-                                          height="30"
-                                          filterUnits="userSpaceOnUse"
-                                          colorInterpolationFilters="sRGB"
-                                        >
-                                          <feFlood
-                                            floodOpacity="0"
-                                            result="BackgroundImageFix"
-                                          />
-                                          <feColorMatrix
-                                            in="SourceAlpha"
-                                            type="matrix"
-                                            values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
-                                            result="hardAlpha"
-                                          />
-                                          <feOffset dy="2" />
-                                          <feGaussianBlur stdDeviation="1.5" />
-                                          <feColorMatrix
-                                            type="matrix"
-                                            values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.1 0"
-                                          />
-                                          <feBlend
-                                            mode="normal"
-                                            in2="BackgroundImageFix"
-                                            result="effect1_dropShadow_34_25"
-                                          />
-                                          <feBlend
-                                            mode="normal"
-                                            in="SourceGraphic"
-                                            in2="effect1_dropShadow_34_25"
-                                            result="shape"
-                                          />
-                                        </filter>
-                                        <linearGradient
-                                          id="paint0_linear_34_25"
-                                          x1="19"
-                                          y1="1"
-                                          x2="19"
-                                          y2="25"
-                                          gradientUnits="userSpaceOnUse"
-                                        >
-                                          <stop
-                                            stopColor="white"
-                                            stopOpacity="0.7"
-                                          />
-                                          <stop offset="1" stopOpacity="0.3" />
-                                        </linearGradient>
-                                        <clipPath id="clip0_34_25">
-                                          <rect
-                                            x="3"
-                                            y="1"
-                                            width="32"
-                                            height="24"
-                                            rx="2"
-                                            fill="white"
-                                          />
-                                        </clipPath>
-                                      </defs>
-                                    </svg>
-                                  </span>
-                                  <span className="font-medium text-gray-900">
-                                    EN
-                                  </span>
-                                </RadioGroup.Description>
-                                <span
-                                  className={classNames(
-                                    active ? "border" : "border-2",
-                                    checked
-                                      ? "border-blue-500"
-                                      : "border-transparent",
-                                    "pointer-events-none absolute -inset-px rounded-lg"
-                                  )}
-                                  aria-hidden="true"
-                                />
-                              </>
-                            )}
-                          </RadioGroup.Option>
-                        ))}
-                      </div>
-                    </RadioGroup>
-                  </div>
-                  <div className="flex gap-[15px] justify-end mt-8">
-                    <div>
-                      <button
-                        onClick={() => setStep(1)}
-                        className="group rounded-full px-4 py-2 text-[13px] font-semibold transition-all flex items-center justify-center bg-[#f5f7f9] text-[#1E2B3A] no-underline active:scale-95 scale-100 duration-75"
-                        style={{
-                          boxShadow: "0 1px 1px #0c192714, 0 1px 3px #0c192724",
-                        }}
-                      >
-                        Previous step
-                      </button>
                     </div>
                     <div>
                       <button
@@ -1390,7 +958,7 @@ export default function DemoPage() {
                 <ul className="mb-auto list-none">
                   <li className="list-none flex items-center">
                     <p className="text-[12px] font-extrabold text-[#1E293B]">
-                      Liftoff
+                      Hero Pitch
                     </p>
                   </li>
                   <li className="mt-4 list-none flex items-center rounded-[9px] text-gray-900 py-[2px]">
@@ -1422,7 +990,7 @@ export default function DemoPage() {
                         d="M5 8.25H19"
                       ></path>{" "}
                     </svg>
-                    <p className="ml-[3px] mr-[6px]">Home</p>
+                    <p className="ml-[3px] mr-[6px]">Dashboard</p>
                   </li>
                   <li className="mt-1 list-none flex items-center rounded-[9px] text-gray-900 py-[4px]">
                     <svg
@@ -1445,7 +1013,7 @@ export default function DemoPage() {
                         d="M15.25 12L9.75 8.75V15.25L15.25 12Z"
                       ></path>
                     </svg>
-                    <p className="ml-[3px] mr-[6px]">Interview Vault</p>
+                    <p className="ml-[3px] mr-[6px]">Estruturação</p>
                     <div className="ml-auto text-[#121217] transform">
                       <svg
                         width="24"
@@ -1467,21 +1035,21 @@ export default function DemoPage() {
                   <li className="mt-1 list-none flex items-center rounded-[3px] relative bg-white text-gray-600 w-full m-0 cursor-pointer hover:bg-[#F7F7F8] focus:outline-none py-[4px]">
                     <div className="bg-[#e8e8ed] pointer-events-none absolute left-[7px] z-10 top-1/2 h-[3px] w-[3px] rounded-full transform -translate-y-1/2"></div>
                     <div className="text-gray-600 truncate pr-4 pl-[18px]">
-                      All Interviews
+                      Criação
                     </div>
                     <div className="absolute w-[1px] bg-[#e8e8ed] left-[8px] top-[9px] bottom-0"></div>
                   </li>
                   <li className="list-none flex items-center rounded-[3px] relative bg-white text-gray-600 w-full m-0 cursor-pointer hover:bg-[#F7F7F8] focus:outline-none py-[4px]">
                     <div className="bg-[#e8e8ed] pointer-events-none absolute left-[7px] z-10 top-1/2 h-[3px] w-[3px] rounded-full transform -translate-y-1/2"></div>
                     <div className="text-gray-600 truncate pr-4 pl-[18px]">
-                      Completed
+                      Análise
                     </div>
                     <div className="absolute w-[1px] bg-[#e8e8ed] left-[8px] top-0 bottom-0"></div>
                   </li>
                   <li className="list-none flex items-center rounded-[3px] relative bg-gray-100 text-gray-600 w-full m-0 cursor-pointer hover:bg-[#F7F7F8] focus:outline-none py-[4px]">
                     <div className="bg-blue-600 pointer-events-none absolute left-[7px] z-10 top-1/2 h-[3px] w-[3px] rounded-full transform -translate-y-1/2"></div>
                     <div className="text-blue-600 truncate pr-4 pl-[18px]">
-                      Question Bank
+                      Concluídos
                     </div>
                     <div className="absolute w-[1px] bg-[#e8e8ed] left-[8px] top-0 bottom-[9px]"></div>
                   </li>
@@ -1506,7 +1074,7 @@ export default function DemoPage() {
                         d="M19 12L5 12"
                       ></path>
                     </svg>
-                    <p className="ml-[3px] mr-[6px]">My Questions</p>
+                    <p className="ml-[3px] mr-[6px]">Meus pitches</p>
                   </li>
                   <li className="mt-1 list-none flex items-center rounded-[9px] text-gray-900 py-[4px]">
                     <svg
@@ -1545,7 +1113,7 @@ export default function DemoPage() {
                         d="M14.75 10.25C16.2688 10.25 17.25 9.01878 17.25 7.5C17.25 5.98122 16.2688 4.75 14.75 4.75"
                       ></path>
                     </svg>
-                    <p className="ml-[3px] mr-[6px]">Community</p>
+                    <p className="ml-[3px] mr-[6px]">Comunidade</p>
                   </li>
                   <li className="mt-1 list-none flex items-center rounded-[9px] text-gray-900 py-[4px]">
                     <svg
@@ -1568,7 +1136,7 @@ export default function DemoPage() {
                         d="M4.75 5.75C4.75 5.19772 5.19772 4.75 5.75 4.75H10C11.1046 4.75 12 5.64543 12 6.75V19.25L11.1716 18.4216C10.4214 17.6714 9.40401 17.25 8.34315 17.25H5.75C5.19772 17.25 4.75 16.8023 4.75 16.25V5.75Z"
                       ></path>
                     </svg>
-                    <p className="ml-[3px] mr-[6px]">Resources</p>
+                    <p className="ml-[3px] mr-[6px]">Conteúdos</p>
                   </li>
                   <li className="mt-1 list-none flex items-center rounded-[9px] text-gray-900 py-[4px]">
                     <svg
@@ -1591,7 +1159,7 @@ export default function DemoPage() {
                         d="M13.25 12C13.25 12.6904 12.6904 13.25 12 13.25C11.3096 13.25 10.75 12.6904 10.75 12C10.75 11.3096 11.3096 10.75 12 10.75C12.6904 10.75 13.25 11.3096 13.25 12Z"
                       ></path>
                     </svg>
-                    <p className="ml-[3px] mr-[6px]">Settings</p>
+                    <p className="ml-[3px] mr-[6px]">Configurações</p>
                   </li>
                 </ul>
                 <ul className="flex flex-col mb-[10px]">
@@ -1625,7 +1193,7 @@ export default function DemoPage() {
               <div className="bg-white text-[#667380] p-[18px] flex flex-col">
                 {step === 1 ? (
                   <div>
-                    <motion.span
+                    {/* <motion.span
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -10 }}
@@ -1633,15 +1201,12 @@ export default function DemoPage() {
                       key={selected.id}
                       className="text-[#1a2b3b] text-[14px] leading-[18px] font-semibold absolute"
                     >
-                      {selected.name} Questions
-                    </motion.span>
+                      {selected.name}
+                    </motion.span> */}
 
                     <ul className="mt-[28px] flex">
                       <li className="list-none max-w-[400px]">
-                        Search through all of the questions in the question
-                        bank. If you don{`'`}t see one you{`'`}re looking for,
-                        you can always add it in your the {`"`}My Questions{`"`}{" "}
-                        section.
+                       Veja os pitches públicos da rede
                       </li>
                     </ul>
                   </div>
@@ -1655,12 +1220,8 @@ export default function DemoPage() {
                       key={selected.id}
                       className="text-[#1a2b3b] text-[14px] leading-[18px] font-semibold absolute"
                     >
-                      {selected.name === "Behavioral"
-                        ? "Tell me about yourself"
-                        : selectedInterviewer.name === "John"
-                        ? "What is a Hash Table, and what is the average case for each of its operations?"
-                        : selectedInterviewer.name === "Richard"
-                        ? "Uber is looking to expand its product line. How would you go about doing this?"
+                      {selected.name === "Elevator"
+                        ? "um pitch elevador"
                         : "You have a 3-gallon jug and 5-gallon jug, how do you measure out exactly 4 gallons?"}
                     </motion.span>
 
@@ -1680,53 +1241,6 @@ export default function DemoPage() {
                       )}
                     </ul>
                   </div>
-                )}
-                {step === 2 && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
-                    className="mt-[12px] flex bg-gray-100 h-[80%] rounded-lg relative ring-1 ring-gray-900/5 shadow-md"
-                  >
-                    {selectedInterviewer.name === "John" ? (
-                      <motion.img
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
-                        key="John"
-                        src="/placeholders/John.webp"
-                        alt="John's Interviewer Profile"
-                        className="absolute top-6 left-6 w-[30%] aspect-video bg-gray-700 rounded ring-1 ring-gray-900/5 shadow-md object-cover"
-                      />
-                    ) : selectedInterviewer.name === "Richard" ? (
-                      <motion.img
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
-                        key="Richard"
-                        src="/placeholders/Richard.webp"
-                        alt="Richard's Interviewer Profile"
-                        className="absolute top-6 left-6 w-[30%] aspect-video bg-gray-700 rounded ring-1 ring-gray-900/5 shadow-md object-cover"
-                      />
-                    ) : selectedInterviewer.name === "Sarah" ? (
-                      <motion.img
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
-                        key="Sarah"
-                        src="/placeholders/Sarah.webp"
-                        alt="Sarah's Interviewer Profile"
-                        className="absolute top-6 left-6 w-[30%] aspect-video bg-gray-700 rounded ring-1 ring-gray-900/5 shadow-md object-cover"
-                      />
-                    ) : (
-                      <div className="absolute top-6 left-6 w-[30%] aspect-video bg-gray-700 rounded"></div>
-                    )}
-                    <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 translate-y-1/2 w-8 h-8 md:w-12 md:h-12 bg-red-400 ring-4 ring-white rounded-full"></div>
-                  </motion.div>
                 )}
                 {step === 1 && (
                   <ul className="mt-[12px] flex items-center space-x-[2px]">
@@ -1757,245 +1271,10 @@ export default function DemoPage() {
                       key={selected.id}
                       className="mt-3 grid grid-cols-3 xl:grid-cols-3 gap-2"
                     >
-                      <li className="list-none relative flex items-stretch text-left">
-                        <div className="group relative w-full">
-                          <div className="relative mb-2 flex h-full max-h-[200px] w-full cursor-pointer items-start justify-between rounded-lg p-2 font-medium transition duration-100">
-                            <div className="absolute inset-0 rounded-lg ring-1 ring-inset ring-zinc-900/[7.5%] group-hover:ring-zinc-900/10"></div>
-                            <div className="relative flex h-full flex-col overflow-hidden">
-                              <div className="flex items-center text-left text-[#1a2b3b]">
-                                <p>Why this company?</p>
-                              </div>
-                              <p className="text-wrap grow font-normal text-[7px]">
-                                Why do you want to work for Google?
-                              </p>
-                              <div className="flex flex-row space-x-1">
-                                <p className="inline-flex items-center justify-center truncate rounded-full border-[0.5px] border-gray-300 px-[3px] text-[7px] font-normal hover:bg-gray-50">
-                                  Product Management
-                                </p>
-                                <p className="inline-flex items-center justify-center truncate rounded-full border-[0.5px] border-[#D0E7DC] bg-[#F3FAF1] px-[3px] text-[7px] font-normal hover:bg-[#edf8ea]">
-                                  <span className="mr-1 flex items-center text-emerald-600">
-                                    <svg
-                                      className="h-2 w-2"
-                                      viewBox="0 0 24 24"
-                                      fill="none"
-                                      xmlns="http://www.w3.org/2000/svg"
-                                    >
-                                      <path
-                                        d="M4.75 12C4.75 7.99594 7.99594 4.75 12 4.75C16.0041 4.75 19.25 7.99594 19.25 12C19.25 16.0041 16.0041 19.25 12 19.25C7.99594 19.25 4.75 16.0041 4.75 12Z"
-                                        fill="#459A5F"
-                                        stroke="#459A5F"
-                                        strokeWidth="1.5"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                      ></path>
-                                      <path
-                                        d="M9.75 12.75L10.1837 13.6744C10.5275 14.407 11.5536 14.4492 11.9564 13.7473L14.25 9.75"
-                                        stroke="#F4FAF4"
-                                        strokeWidth="1.5"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                      ></path>
-                                    </svg>
-                                  </span>
-                                  Completed
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </li>
-                      <li className="list-none relative flex items-stretch text-left">
-                        <div className="group relative w-full">
-                          <div className="relative mb-2 flex h-full max-h-[200px] w-full cursor-pointer items-start justify-between rounded-lg p-2 font-medium transition duration-100">
-                            <div className="absolute inset-0 rounded-lg ring-1 ring-inset ring-zinc-900/[7.5%] group-hover:ring-zinc-900/10"></div>
-                            <div className="relative flex h-full flex-col overflow-hidden">
-                              <div className="flex items-center text-left text-[#1a2b3b]">
-                                <p>What are you most proud of?</p>
-                              </div>
-                              <p className="text-wrap grow font-normal text-[7px]">
-                                Tell me about the thing you are most proud of.
-                                Why is it so important to you?
-                              </p>
-                              <div className="flex flex-row space-x-1">
-                                <p className="inline-flex items-center justify-center truncate rounded-full border-[0.5px] border-gray-300 px-[3px] text-[7px] font-normal hover:bg-gray-50">
-                                  General
-                                </p>
-                                <p className="inline-flex items-center justify-center truncate rounded-full border-[0.5px] border-[#D0E7DC] bg-[#F3FAF1] px-[3px] text-[7px] font-normal hover:bg-[#edf8ea]">
-                                  <span className="mr-1 flex items-center text-emerald-600">
-                                    <svg
-                                      className="h-2 w-2"
-                                      viewBox="0 0 24 24"
-                                      fill="none"
-                                      xmlns="http://www.w3.org/2000/svg"
-                                    >
-                                      <path
-                                        d="M4.75 12C4.75 7.99594 7.99594 4.75 12 4.75C16.0041 4.75 19.25 7.99594 19.25 12C19.25 16.0041 16.0041 19.25 12 19.25C7.99594 19.25 4.75 16.0041 4.75 12Z"
-                                        fill="#459A5F"
-                                        stroke="#459A5F"
-                                        strokeWidth="1.5"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                      ></path>
-                                      <path
-                                        d="M9.75 12.75L10.1837 13.6744C10.5275 14.407 11.5536 14.4492 11.9564 13.7473L14.25 9.75"
-                                        stroke="#F4FAF4"
-                                        strokeWidth="1.5"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                      ></path>
-                                    </svg>
-                                  </span>
-                                  Completed
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </li>
-                      <li className="list-none relative flex items-stretch text-left">
-                        <div className="group relative w-full">
-                          <div className="relative mb-2 flex h-full max-h-[200px] w-full cursor-pointer items-start justify-between rounded-lg p-2 font-medium transition duration-100">
-                            <div className="absolute inset-0 rounded-lg ring-1 ring-inset ring-zinc-900/[7.5%] group-hover:ring-zinc-900/10"></div>
-                            <div className="relative flex h-full flex-col overflow-hidden">
-                              <div className="flex items-center text-left text-[#1a2b3b]">
-                                <p>Tell me about yourself</p>
-                              </div>
-                              <p className="text-wrap grow font-normal text-[7px]">
-                                Walk me through your resume, projects, and
-                                anything you feel is relevant to your story.
-                              </p>
-                              <div className="flex flex-row space-x-1">
-                                <p className="inline-flex items-center justify-center truncate rounded-full border-[0.5px] border-gray-300 px-[3px] text-[7px] font-normal hover:bg-gray-50">
-                                  Product Management
-                                </p>
-                                <p className="inline-flex items-center justify-center truncate rounded-full border-[0.5px] border-[#D0E7DC] bg-[#F3FAF1] px-[3px] text-[7px] font-normal hover:bg-[#edf8ea]">
-                                  <span className="mr-1 flex items-center text-emerald-600">
-                                    <svg
-                                      className="h-2 w-2"
-                                      viewBox="0 0 24 24"
-                                      fill="none"
-                                      xmlns="http://www.w3.org/2000/svg"
-                                    >
-                                      <path
-                                        d="M4.75 12C4.75 7.99594 7.99594 4.75 12 4.75C16.0041 4.75 19.25 7.99594 19.25 12C19.25 16.0041 16.0041 19.25 12 19.25C7.99594 19.25 4.75 16.0041 4.75 12Z"
-                                        fill="#459A5F"
-                                        stroke="#459A5F"
-                                        strokeWidth="1.5"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                      ></path>
-                                      <path
-                                        d="M9.75 12.75L10.1837 13.6744C10.5275 14.407 11.5536 14.4492 11.9564 13.7473L14.25 9.75"
-                                        stroke="#F4FAF4"
-                                        strokeWidth="1.5"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                      ></path>
-                                    </svg>
-                                  </span>
-                                  Completed
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </li>
-                      <li className="list-none relative flex items-stretch text-left">
-                        <div className="group relative w-full">
-                          <div className="relative mb-2 flex h-full max-h-[200px] w-full cursor-pointer items-start justify-between rounded-lg p-2 font-medium transition duration-100">
-                            <div className="absolute inset-0 rounded-lg ring-1 ring-inset ring-zinc-900/[7.5%] group-hover:ring-zinc-900/10"></div>
-                            <div className="relative flex h-full flex-col overflow-hidden">
-                              <div className="flex items-center text-left text-[#1a2b3b]">
-                                <p>What are your strengths?</p>
-                              </div>
-                              <p className="text-wrap grow font-normal text-[7px]">
-                                Tell me about your strengths and why you would
-                                make a strong candidate.
-                              </p>
-                              <div className="flex flex-row space-x-1">
-                                <p className="inline-flex items-center justify-center truncate rounded-full border-[0.5px] border-gray-300 px-[3px] text-[7px] font-normal hover:bg-gray-50">
-                                  Software Engineering
-                                </p>
-                                <p className="inline-flex items-center justify-center truncate rounded-full border-[0.5px] border-[#D0E7DC] bg-[#F3FAF1] px-[3px] text-[7px] font-normal hover:bg-[#edf8ea]">
-                                  <span className="mr-1 flex items-center text-emerald-600">
-                                    <svg
-                                      className="h-2 w-2"
-                                      viewBox="0 0 24 24"
-                                      fill="none"
-                                      xmlns="http://www.w3.org/2000/svg"
-                                    >
-                                      <path
-                                        d="M4.75 12C4.75 7.99594 7.99594 4.75 12 4.75C16.0041 4.75 19.25 7.99594 19.25 12C19.25 16.0041 16.0041 19.25 12 19.25C7.99594 19.25 4.75 16.0041 4.75 12Z"
-                                        fill="#459A5F"
-                                        stroke="#459A5F"
-                                        strokeWidth="1.5"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                      ></path>
-                                      <path
-                                        d="M9.75 12.75L10.1837 13.6744C10.5275 14.407 11.5536 14.4492 11.9564 13.7473L14.25 9.75"
-                                        stroke="#F4FAF4"
-                                        strokeWidth="1.5"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                      ></path>
-                                    </svg>
-                                  </span>
-                                  Completed
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </li>
-                      <li className="list-none relative flex items-stretch text-left">
-                        <div className="group relative w-full">
-                          <div className="relative mb-2 flex h-full max-h-[200px] w-full cursor-pointer items-start justify-between rounded-lg p-2 font-medium transition duration-100">
-                            <div className="absolute inset-0 rounded-lg ring-1 ring-inset ring-zinc-900/[7.5%] group-hover:ring-zinc-900/10"></div>
-                            <div className="relative flex h-full flex-col overflow-hidden">
-                              <div className="flex items-center text-left text-[#1a2b3b]">
-                                <p>What are your weaknesses?</p>
-                              </div>
-                              <p className="text-wrap grow font-normal text-[7px]">
-                                Tell me about your weaknesses, and how that has
-                                impacted your previous work.
-                              </p>
-                              <div className="flex flex-row space-x-1">
-                                <p className="inline-flex items-center justify-center truncate rounded-full border-[0.5px] border-gray-300 px-[3px] text-[7px] font-normal hover:bg-gray-50">
-                                  Product Management
-                                </p>
-                                <p className="inline-flex items-center justify-center truncate rounded-full border-[0.5px] border-[#D0E7DC] bg-[#F3FAF1] px-[3px] text-[7px] font-normal hover:bg-[#edf8ea]">
-                                  <span className="mr-1 flex items-center text-emerald-600">
-                                    <svg
-                                      className="h-2 w-2"
-                                      viewBox="0 0 24 24"
-                                      fill="none"
-                                      xmlns="http://www.w3.org/2000/svg"
-                                    >
-                                      <path
-                                        d="M4.75 12C4.75 7.99594 7.99594 4.75 12 4.75C16.0041 4.75 19.25 7.99594 19.25 12C19.25 16.0041 16.0041 19.25 12 19.25C7.99594 19.25 4.75 16.0041 4.75 12Z"
-                                        fill="#459A5F"
-                                        stroke="#459A5F"
-                                        strokeWidth="1.5"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                      ></path>
-                                      <path
-                                        d="M9.75 12.75L10.1837 13.6744C10.5275 14.407 11.5536 14.4492 11.9564 13.7473L14.25 9.75"
-                                        stroke="#F4FAF4"
-                                        strokeWidth="1.5"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                      ></path>
-                                    </svg>
-                                  </span>
-                                  Completed
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </li>
+                    
+                     
+                    
+                      
                     </motion.ul>
                   ) : (
                     <motion.ul
@@ -2012,15 +1291,14 @@ export default function DemoPage() {
                             <div className="absolute inset-0 rounded-lg ring-1 ring-inset ring-zinc-900/[7.5%] group-hover:ring-zinc-900/10"></div>
                             <div className="relative flex h-full flex-col overflow-hidden">
                               <div className="flex items-center text-left text-[#1a2b3b]">
-                                <p>Walk me through this function</p>
+                                <p>Startup Weekend 2023</p>
                               </div>
                               <p className="text-wrap grow font-normal text-[7px]">
-                                Explain in as much detail as you can what this
-                                function does, including its time and space...
+                                
                               </p>
                               <div className="flex flex-row space-x-1">
                                 <p className="inline-flex items-center justify-center truncate rounded-full border-[0.5px] border-gray-300 px-[3px] text-[7px] font-normal hover:bg-gray-50">
-                                  Software Engineering
+                                  Fintech
                                 </p>
                                 <p className="inline-flex items-center justify-center truncate rounded-full border-[0.5px] border-[#D0E7DC] bg-[#F3FAF1] px-[3px] text-[7px] font-normal hover:bg-[#edf8ea]">
                                   <span className="mr-1 flex items-center text-emerald-600">
@@ -2155,15 +1433,14 @@ export default function DemoPage() {
                             <div className="absolute inset-0 rounded-lg ring-1 ring-inset ring-zinc-900/[7.5%] group-hover:ring-zinc-900/10"></div>
                             <div className="relative flex h-full flex-col overflow-hidden">
                               <div className="flex items-center text-left text-[#1a2b3b]">
-                                <p>How would you rebuild Twitter?</p>
+                                <p>Investidor Anjo</p>
                               </div>
                               <p className="text-wrap grow font-normal text-[7px]">
-                                Given what you know about Twitter, how would you
-                                architect it from the ground up?
+                               
                               </p>
                               <div className="flex flex-row space-x-1">
                                 <p className="inline-flex items-center justify-center truncate rounded-full border-[0.5px] border-gray-300 px-[3px] text-[7px] font-normal hover:bg-gray-50">
-                                  Systems Design
+                                  Investimentos
                                 </p>
                                 <p className="inline-flex items-center justify-center truncate rounded-full border-[0.5px] border-[#D0E7DC] bg-[#F3FAF1] px-[3px] text-[7px] font-normal hover:bg-[#edf8ea]">
                                   <span className="mr-1 flex items-center text-emerald-600">
