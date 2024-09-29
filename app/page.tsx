@@ -131,7 +131,7 @@ const handleExperiment = () => {
               }}
             >
               <Link
-                href="#"
+                href="https://wa.me/5547933004238?text=Quero%20conversar%20sobre%20o%20Hero%20Pitch"
                 target="_blank"
                 className="group rounded-full pl-[8px] min-w-[180px] pr-4 py-2 text-[13px] font-semibold transition-all flex items-center justify-center bg-[#1E2B3A] text-white hover:[linear-gradient(0deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.1)), #0D2247] no-underline flex gap-x-2  active:scale-95 scale-100 duration-75"
                 style={{
@@ -234,7 +234,7 @@ const handleExperiment = () => {
           data-transition-in
           className="z-50 fixed top-0 right-[-2px] w-[80%] md:w-1/2 h-screen bg-[#c3e4ff]"
         ></motion.canvas>
-        <div className="h-[60px] bg-[#1D2B3A] fixed bottom-0 z-20 w-full flex flex-row items-center justify-evenly">
+        {/* <div className="h-[60px] bg-[#1D2B3A] fixed bottom-0 z-20 w-full flex flex-row items-center justify-evenly">
           <p className="text-white/80 text-base md:text-lg font-semibold md:leading-[60px] whitespace-nowrap flex flex-row">
             Interviews from
           </p>
@@ -597,7 +597,7 @@ const handleExperiment = () => {
               fill="white"
             />
           </svg>
-        </div>
+        </div> */}
       </div>
     </AnimatePresence>
   );
