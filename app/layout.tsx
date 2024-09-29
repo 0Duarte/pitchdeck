@@ -6,10 +6,10 @@ export const metadata: Metadata = {
   openGraph: {
     title: "HeroPitch -  Eleve o seu negócio",
     description:
-      "HeroPitch é uma plataforma de pitch de negócios que ajuda você a criar um pitch incrível.",
+      "Pratique e aprimore seu pitch com feedback de IA",
     images: [
       {
-        url: "https://hero-pitch.vercel.app/opengraph-image",
+        url: "/favicon.ico",
       },
     ],
   },
