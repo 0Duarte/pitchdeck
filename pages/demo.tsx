@@ -915,7 +915,7 @@ export default function DemoPage() {
               )}
             </div>
           </div>
-          <div className="w-full h-[40vh] md:w-1/2 md:h-screen bg-[#F1F2F4] relative overflow-hidden">
+          <div className="invisible md:visible w-full h-[40vh] md:w-1/2 md:h-screen bg-[#F1F2F4] relative overflow-hidden">
             <svg
               id="texture"
               style={{ filter: "contrast(120%) brightness(120%)" }}
@@ -1380,7 +1380,7 @@ export default function DemoPage() {
                           </div>
                         </div>
                       </li>
-                      <li className="list-none relative flex items-stretch text-left">
+                      {/* <li className="list-none relative flex items-stretch text-left">
                         <div className="group relative w-full">
                           <div className="relative mb-2 flex h-full max-h-[200px] w-full cursor-pointer items-start justify-between rounded-lg p-2 font-medium transition duration-100">
                             <div className="absolute inset-0 rounded-lg ring-1 ring-inset ring-zinc-900/[7.5%] group-hover:ring-zinc-900/10"></div>
@@ -1426,7 +1426,7 @@ export default function DemoPage() {
                             </div>
                           </div>
                         </div>
-                      </li>
+                      </li> */}
                       <li className="list-none relative flex items-stretch text-left">
                         <div className="group relative w-full">
                           <div className="relative mb-2 flex h-full max-h-[200px] w-full cursor-pointer items-start justify-between rounded-lg p-2 font-medium transition duration-100">
