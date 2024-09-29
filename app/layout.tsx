@@ -21,7 +21,7 @@ export const metadata: Metadata = {
   //   images: ["https://demo.useliftoff.com/opengraph-image"],
   //   creator: "@tmeyer_me",
   // },
-  metadataBase: new URL("https://demo.useliftoff.com"),
+  metadataBase: new URL("https://heropitch.tech"),
   themeColor: "#FFF",
 };
 
