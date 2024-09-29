@@ -1,22 +1,43 @@
-import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
-import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs'
+import { Ratelimit } from "@upstash/ratelimit";
+import { Redis } from "@upstash/redis";
+import { NextFetchEvent, NextRequest, NextResponse } from "next/server";
 
-export async function middleware(req: NextRequest) {
-  const res = NextResponse.next()
-  const supabase = createMiddlewareClient({ req, res })
+export default async function middleware(
+  request: NextRequest,
+  event: NextFetchEvent
+): Promise<Response | undefined> {
+  const ip = request.ip ?? "127.0.0.1";
 
-  const {
-    data: { session },
-  } = await supabase.auth.getSession()
+  // ratelimit for demo app: https://demo.useliftoff.com/
+  if (
+    process.env.NODE_ENV != "development" &&
+    process.env.UPSTASH_REDIS_REST_URL &&
+    process.env.UPSTASH_REDIS_REST_TOKEN
+  ) {
+    const ratelimit = new Ratelimit({
+      redis: Redis.fromEnv(),
+      // Rate limit to 6 attempts per 2 days
+      limiter: Ratelimit.cachedFixedWindow(12, `${24 * 60 * 60}s`),
+      ephemeralCache: new Map(),
+      analytics: true,
+    });
 
-  if (!session && req.nextUrl.pathname.startsWith('/demo')) {
-    return NextResponse.redirect(new URL('/auth', req.url))
+    const { success, pending, limit, reset, remaining } = await ratelimit.limit(
+      `ratelimit_middleware_${ip}`
+    );
+    event.waitUntil(pending);
+
+    const res = success
+      ? NextResponse.next()
+      : NextResponse.redirect(new URL("/api/blocked", request.url));
+
+    res.headers.set("X-RateLimit-Limit", limit.toString());
+    res.headers.set("X-RateLimit-Remaining", remaining.toString());
+    res.headers.set("X-RateLimit-Reset", reset.toString());
+    return res;
   }
-
-  return res
 }
 
 export const config = {
-  matcher: ['/demo/:path*'],
-}
+  matcher: ["/api/transcribe", "/api/generate"],
+};

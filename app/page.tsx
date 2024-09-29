@@ -6,10 +6,10 @@ import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { gradient } from "@/components/Gradient";
 import { supabase } from '../utils/supabaseClient';
-
+import { Session } from '@supabase/supabase-js';
 
 export default function Home() {
-  const [userSession, setUserSession] = useState(null);
+  const [userSession, setUserSession] = useState<Session | null>(null);
 
 const [loading, setLoading] = useState(true);
 const router = useRouter();
@@ -88,7 +88,7 @@ const handleExperiment = () => {
             <span className="text-3xl">#HeroPitch</span>
             <div className="">
               Eleve o nível <br />
-              de seus <span className="text-[#407BBF]">Pitch's</span>
+              de seus <span className="text-[#407BBF]">Pitch&apos;s</span>
               <span className="font-inter text-[#407BBF]">.</span>
             </div>
           </motion.h1>
