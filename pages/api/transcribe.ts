@@ -1,53 +1,65 @@
-import type { NextApiRequest, NextApiResponse } from 'next'
-import formidable from 'formidable'
-import fs from 'fs'
-import { Configuration, OpenAIApi } from 'openai'
+import { Configuration, OpenAIApi } from "openai";
+import { IncomingForm } from "formidable";
+const fs = require("fs");
 
 export const config = {
   api: {
     bodyParser: false,
   },
-}
+};
 
-const configuration = new Configuration({
-  apiKey: process.env.OPENAI_API_KEY,
-})
-const openai = new OpenAIApi(configuration)
+export default async function handler(req: any, res: any) {
+  const configuration = new Configuration({
+    apiKey: process.env.OPENAI_API_KEY,
+  });
+  const openai = new OpenAIApi(configuration);
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' })
-  }
+  // Here, we create a temporary file to store the audio file using Vercel's tmp directory
+  // As we compressed the file and are limiting recordings to 2.5 minutes, we won't run into trouble with storage capacity
+  const fData = await new Promise<{ fields: any; files: any }>(
+    (resolve, reject) => {
+      const form = new IncomingForm({
+        multiples: false,
+        uploadDir: "/tmp",
+        keepExtensions: true,
+      });
+      form.parse(req, (err, fields, files) => {
+        if (err) return reject(err);
+        resolve({ fields, files });
+      });
+    }
+  );
+
+  const videoFile = fData.files.file;
+  const videoFilePath = videoFile?.filepath;
+  console.log(videoFilePath);
 
   try {
-    const form = new formidable.IncomingForm()
-    form.parse(req, async (err, fields, files) => {
-      if (err) {
-        return res.status(500).json({ error: 'Error parsing form data' })
-      }
+    const resp = await openai.createTranscription(
+      fs.createReadStream(videoFilePath),
+      "whisper-1"
+      // Uncomment the line below if you would also like to capture filler words:
+      // "Please include any filler words such as 'um', 'uh', 'er', or other disfluencies in the transcription. Make sure to also capitalize and punctuate properly."
+    );
 
-      const file = files.file as formidable.File
-      if (!file) {
-        return res.status(400).json({ error: 'No file uploaded' })
-      }
+    const transcript = resp?.data?.text;
 
-      const filePath = file.filepath
-      const fileBuffer = fs.readFileSync(filePath)
+    // Content moderation check
+    const response = await openai.createModeration({
+      input: resp?.data?.text,
+    });
 
-      const transcription = await openai.createTranscription(
-        fileBuffer as any,
-        'whisper-1'
-      )
+    if (response?.data?.results[0]?.flagged) {
+      res
+        .status(200)
+        .json({ error: "Inappropriate content detected. Please try again." });
+      return;
+    }
 
-      fs.unlinkSync(filePath) // Remove the temporary file
-
-      res.status(200).json({ transcript: transcription.data.text })
-    })
+    res.status(200).json({ transcript });
+    return resp.data;
   } catch (error) {
-    console.error('Error in transcribe API:', error)
-    res.status(500).json({ error: 'An error occurred during transcription' })
+    console.error("server error", error);
+    res.status(500).json({ error: "Error" });
   }
 }

@@ -35,9 +35,9 @@ export default async function middleware(
     res.headers.set("X-RateLimit-Remaining", remaining.toString());
     res.headers.set("X-RateLimit-Reset", reset.toString());
     return res;
-  }
+  };
 }
 
-export const config = {
-  matcher: ["/api/transcribe", "/api/generate"],
-};
+  export const config = {
+    matcher: ["/api/transcribe", "/api/generate"],
+  }
